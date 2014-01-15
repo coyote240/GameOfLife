@@ -16,8 +16,9 @@ class Board:
         '''Read a board from a text file.
         Given a text file in the format of n cells per line,
         read the file and initialize the board.
-        '''
 
+        What this method does NOT do is check for a valid format.
+        '''
         board = cls()
 
         with open(filename, 'r') as f:
@@ -37,7 +38,6 @@ class Board:
         '''Create a new board.
         Given dimensions, generate a board with cells of random value.
         '''
-
         if height is None:
             height = width
 
@@ -60,6 +60,15 @@ class Board:
         return self.cells.get(coord, None)
 
     def generate(self, generations=1):
+        '''Advance board state n generations.
+        Default to advancing one generation.
+
+        **NOTE:
+        It is VERY important that calc_next_state() and update()
+        are called in separate loops.  Otherwise changes made during each
+        generation would affect later state changes within the same
+        generation.
+        '''
         for g in range(generations):
             for cell in self.cells.values():
                 cell.calc_next_state()
@@ -98,6 +107,10 @@ class Cell:
     def get_neighbors(self):
         '''Get neighbors.
         Return a dict of coord => cell for all adjacent cells.
+
+        The method to calculate the coordinates of neighbors is a bit
+        brutal.  If I were to live with this code, I'd likely try to
+        clean it up a bit.
         '''
         neighbors = {}
         x, y = self.coords
@@ -109,11 +122,17 @@ class Cell:
         return neighbors
 
     def live_count(self):
+        '''Return the number of living neighbors.'''
         neighbors = self.get_neighbors()
         alive = [c for c in neighbors.values() if c.value]
         return len(alive)
 
     def calc_next_state(self):
+        '''Calculate next state.
+        Calculate state of this cell after the next generation
+        and store it locally.  This is the value of the cell after
+        update() is called.
+        '''
         alive = self.live_count()
         self.next_state = self.value
 
@@ -125,7 +144,12 @@ class Cell:
                 self.next_state = 1
 
     def update(self):
+        '''Update current state.
+        Must be called after calc_next_state(), updates the value of
+        this cell after n generations.
+        '''
         self.value = self.next_state
+        self.next_state = None
 
 
 if __name__ == '__main__':
