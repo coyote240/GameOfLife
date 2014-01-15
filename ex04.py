@@ -33,10 +33,14 @@ class Board:
         return board
 
     @classmethod
-    def make_board(cls, width=5, height=5):
+    def make_board(cls, width=5, height=None):
         '''Create a new board.
         Given dimensions, generate a board with cells of random value.
         '''
+
+        if height is None:
+            height = width
+
         board = cls()
         board.width = width
         board.height = height
@@ -54,6 +58,13 @@ class Board:
 
     def get_cell(self, coord):
         return self.cells.get(coord, None)
+
+    def generate(self, generations=1):
+        for g in range(generations):
+            for cell in self.cells.values():
+                cell.calc_next_state()
+            for cell in self.cells.values():
+                cell.update()
 
     def __str__(self):
         out = ''
@@ -90,16 +101,38 @@ class Cell:
         '''
         neighbors = {}
         x, y = self.coords
-        for coord in [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]:
+        for coord in [(x+1, y), (x-1, y), (x, y+1), (x, y-1),
+                      (x+1, y+1), (x+1, y-1), (x-1, y-1), (x-1, y+1)]:
             if coord in self.board.cells:
                 neighbors[coord] = self.board.get_cell(coord)
 
         return neighbors
 
+    def live_count(self):
+        neighbors = self.get_neighbors()
+        alive = [c for c in neighbors.values() if c.value]
+        return len(alive)
+
+    def calc_next_state(self):
+        alive = self.live_count()
+        self.next_state = self.value
+
+        if self.value:
+            if alive < 2 or alive > 3:
+                self.next_state = 0
+        else:
+            if alive == 3:
+                self.next_state = 1
+
+    def update(self):
+        self.value = self.next_state
+
 
 if __name__ == '__main__':
 
-    #b = Board.read_board('board.txt')
-    b = Board.make_board(20, 20)
-    #print b.cells.get((4, 4)).get_neighbors()
+    b = Board.read_board('board.txt')
+    #b = Board.make_board(20)
+    print b
+
+    b.generate()
     print b
