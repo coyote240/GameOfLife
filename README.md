@@ -16,18 +16,20 @@ following rules:
    (reproduction)
 
 As an example, this game board as input:
-01000 
-10011 
-11001 
-01000 
-10001
+
+    01000 
+    10011 
+    11001 
+    01000 
+    10001
 
 Will have
-00000
-10111
-11111
-01000
-00000
+
+    00000
+    10111
+    11111
+    01000
+    00000
 
 ## Solution
 
@@ -38,4 +40,10 @@ Running life.py from the terminal:
     python life.py
 
 The program will load and parse the included board.txt, print it, and then
-print the following generation.
+print the following generation.  The included board.txt mimics the input
+from the exercise instructions and matches the expected output.
+
+Alternately, I've included life2.py which accepts a number as an argument
+and will create a board of that size, output it, and output one generation.
+
+    python life2.py 20
