@@ -1,5 +1,5 @@
 #Game of Life
-##Rally Software, Exercise 4
+##Exercise 4
 
 ## Instructions
 
